@@ -9,6 +9,28 @@ module Enumerable
     end
   end
 
+  def my_select(&block)
+    result = []
+    self.my_each do |item|
+      result << item if block.call(item)
+    end
+    result
+  end
+
+  def my_all?(&block)
+    if !block_given?
+      block = Proc.new { |item| item }
+    end
+
+    all_passed = true
+    self.my_each do |item|
+      unless block.call(item)
+        all_passed = false
+        break
+      end
+    end
+    return all_passed
+  end
 
 end
 
