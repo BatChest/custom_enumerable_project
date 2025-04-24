@@ -32,6 +32,53 @@ module Enumerable
     return all_passed
   end
 
+  def my_none?(&block)
+    if !block_given?
+      block = Proc.new { |item| item }
+    end
+
+    self.my_each do |item|
+      if block.call(item)
+        return false
+      end
+    end
+    return true
+  end
+
+  def my_count(search_value = nil, &block)
+    counter = 0
+    if block_given?
+      self.my_each do |item|
+        if block.call(item)
+          counter += 1
+        end
+      end
+    elsif search_value != nil
+      self.my_each do |item|
+        if item == search_value
+          counter += 1
+        end
+      end
+    else
+      self.my_each do |_|
+        counter += 1
+      end
+    end
+    return counter
+  end
+
+  def my_map(&block)
+    result = []
+    self.my_each do |item|
+      result << block.call(item)
+    end
+    result
+  end
+
+  def my_inject(intial_value = nil, symbol = nil, &block)
+
+  end
+
 end
 
 # You will first have to define my_each
