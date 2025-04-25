@@ -75,8 +75,39 @@ module Enumerable
     result
   end
 
-  def my_inject(intial_value = nil, symbol = nil, &block)
+  def my_inject(initial_value = nil, symbol = nil, &block)
+    # Determine operation type and initial value
+    if block_given? && initial_value.is_a?(Symbol) && symbol.nil?
+      # Special case: inject(:symbol) was used, moving args
+      symbol = initial_value
+      initial_value = nil
+    end
 
+    # Set up accumulator and starting point
+    if initial_value.nil? && !self.empty?
+      accumulator = self.first
+      start_index = 1
+    elsif !initial_value.nil?
+      accumulator = initial_value
+      start_index = 0
+    else
+      raise "Cannot call inject on an empty collection without an initial value"
+    end
+
+    # Perform the accumulation
+    self.my_each_with_index do |element, index|
+      next if index < start_index
+
+      if block_given?
+        accumulator = block.call(accumulator, element)
+      elsif symbol.is_a?(Symbol)
+        accumulator = accumulator.send(symbol, element)
+      else
+        raise ArgumentError, "Invalid arguments for my_inject"
+      end
+    end
+
+    return accumulator
   end
 
 end
